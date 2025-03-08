@@ -6,5 +6,6 @@ export async function productRoutes(fastify: FastifyInstance) {
   fastify.get('/products', ProductHandler.getProducts);
   fastify.get('/products/:id', ProductHandler.getProductById);
   fastify.put('/products/:id', ProductHandler.updateProduct);
+  fastify.put('/products/update-stock/:id', ProductHandler.updateStock);
   fastify.delete('/products/:id', ProductHandler.deleteProduct);
 }

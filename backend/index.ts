@@ -21,7 +21,7 @@ fastify.get('/', function (request, reply) {
 fastify.register(productRoutes)
 
 // Run the server!
-fastify.listen({ port: 3000 }, function (err, address) {
+fastify.listen({ port: 5500 }, function (err, address) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)

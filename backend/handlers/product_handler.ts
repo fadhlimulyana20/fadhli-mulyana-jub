@@ -27,4 +27,9 @@ export class ProductHandler {
     await ProductRepository.deleteProduct(req.params.id);
     return reply.status(204).send();
   }
+
+  static async updateStock(req: FastifyRequest<{ Params: { id: string }, Body: { delta: number } }>, reply: FastifyReply) {
+    const updatedProduct = await ProductRepository.updateProductStockDelta(req.params.id, req.body.delta);
+    return reply.send(updatedProduct);
+  }
 }
