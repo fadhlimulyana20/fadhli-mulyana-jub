@@ -3,6 +3,11 @@
 
 // ESM
 import Fastify from 'fastify'
+import { productRoutes } from './routes/product_route'
+import dotenv from 'dotenv'
+
+dotenv.config();
+console.log(process.env.DB_HOST);
 
 const fastify = Fastify({
   logger: true
@@ -12,6 +17,8 @@ const fastify = Fastify({
 fastify.get('/', function (request, reply) {
   reply.send({ hello: 'world' })
 })
+
+fastify.register(productRoutes)
 
 // Run the server!
 fastify.listen({ port: 3000 }, function (err, address) {
