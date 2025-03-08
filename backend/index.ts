@@ -5,6 +5,7 @@
 import Fastify from 'fastify'
 import { productRoutes } from './routes/product_route'
 import dotenv from 'dotenv'
+import cors from '@fastify/cors'
 
 dotenv.config();
 console.log(process.env.DB_HOST);
@@ -12,6 +13,11 @@ console.log(process.env.DB_HOST);
 const fastify = Fastify({
   logger: true
 })
+
+fastify.register(cors, {
+  origin: '*'
+})
+
 
 // Declare a route
 fastify.get('/', function (request, reply) {
