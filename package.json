@@ -1,0 +1,14 @@
+{
+  "name": "jubelio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Fadhli Mulyana <baba.fadhli@gmail.com>",
+  "license": "MIT",
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "start": "concurrently \"npm run start -w backend\" \"npm run start -w frontend\""
+  }
+}
