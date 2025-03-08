@@ -21,4 +21,15 @@ export async function RemoteGetProductList() {
         throw(e)
     }
 }
+
+export async function RemoteGetProductDetail(id: string) {
+    try {
+        const res = await backendAPI.get<Product>(BackendURL.products.detail.replace(/:id/g, id))
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}
   

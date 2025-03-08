@@ -1,5 +1,6 @@
 export const BackendURL = {
     products: {
-        list: '/products'
+        list: '/products',
+        detail: '/products/:id'
     }
 }

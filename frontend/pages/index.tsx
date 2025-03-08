@@ -46,7 +46,7 @@ export default function Home() {
               <ProductCard
                 name={o.title}
                 category={o.category}
-                href={''}
+                href={`/product/${o.id}`}
                 image={o.image}
                 price={String(o.price)}
               />
