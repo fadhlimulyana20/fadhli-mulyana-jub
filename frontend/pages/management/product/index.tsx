@@ -1,9 +1,11 @@
 import TableKey from "@/components/molecules/table"
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Product, RemoteGetProductList } from "@/models/product"
+import { useRouter } from "next/router"
 import { useCallback, useEffect, useState } from "react"
 
 export default function ProductManagementIndexPage() {
+    const router = useRouter()
     const [products, setProducts] = useState<Array<Product>>([])
 
     const tableOptions = [
@@ -29,7 +31,7 @@ export default function ProductManagementIndexPage() {
         {
             name: 'Edit',
             action: (id: any) => {
-                // navigate(`/user/edit/${id}`)
+                router.push(`/management/product/edit/${id}`)
             }
         },
         {

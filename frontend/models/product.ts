@@ -33,3 +33,16 @@ export async function RemoteGetProductDetail(id: string) {
     }
 }
   
+export async function RemoteUpdateProduct(param: Product) {
+    try {
+        const res = await backendAPI.put<Product>(BackendURL.products.detail.replace(/:id/g, String(param.id)), {
+            ...param
+        })
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}
+  

@@ -10,6 +10,10 @@ const links = [
     {
         label: 'Cart',
         href: '/cart'
+    },
+    {
+        label: 'Product Management',
+        href: '/management/product'
     }
 ]
 
