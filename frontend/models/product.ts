@@ -69,4 +69,16 @@ export async function RemoteDeleteProduct(id: number) {
         throw(e)
     }
 }
-  
+
+export async function RemoteAdjustProductStock(product_id: number, stock_delta: number) {
+    try {
+        const res = await backendAPI.put<Product>(BackendURL.products.adjustStock.replace(/:id/g, String(product_id)), {
+            delta: stock_delta
+        })
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}

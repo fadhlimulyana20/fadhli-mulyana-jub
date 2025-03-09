@@ -22,7 +22,7 @@ export class ProductRepository {
 
     // Get all products
     static async getAllProducts(): Promise<Product[]> {
-        const result = await db.raw(`SELECT * FROM products`);
+        const result = await db.raw(`SELECT * FROM products order by created_at ASC`);
         return result.rows;
     }
 
