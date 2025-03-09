@@ -16,7 +16,7 @@ const fastify = Fastify({
 
 fastify.register(cors, {
   origin: '*',
-  methods: ["GET", "PUT", "POST", "OPTIONS"]
+  methods: ["GET", "PUT", "POST", "OPTIONS", "DELETE"]
 })
 
 // Declare a route

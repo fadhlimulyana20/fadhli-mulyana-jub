@@ -56,13 +56,13 @@ async function bulkImport(db, products) {
     const values = newProducts
       .map(
         (p) =>
-          `('${p.id}', '${cleanString(p.title)}', ${p.price}, '${cleanString(p.description)}', '${cleanString(p.category)}', '${p.image}', ${p.stock ?? 0})`
+          `('${cleanString(p.title)}', ${p.price}, '${cleanString(p.description)}', '${cleanString(p.category)}', '${p.image}', ${p.stock ?? 0})`
       )
       .join(",");
 
 
     await db.raw(
-      `INSERT INTO products (id, title, price, description, category, image, stock) VALUES ${values}`
+      `INSERT INTO products (title, price, description, category, image, stock) VALUES ${values}`
     );
 
     return `${newProducts.length} products imported successfully.`;

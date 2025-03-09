@@ -46,3 +46,27 @@ export async function RemoteUpdateProduct(param: Product) {
     }
 }
   
+export async function RemoteCreateProduct(param: Product) {
+    try {
+        const res = await backendAPI.post<Product>(BackendURL.products.list, {
+            ...param
+        })
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}
+  
+export async function RemoteDeleteProduct(id: number) {
+    try {
+        const res = await backendAPI.delete<any>(BackendURL.products.detail.replace(/:id/g, String(id)))
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}
+  
