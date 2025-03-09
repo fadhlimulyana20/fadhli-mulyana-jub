@@ -1,5 +1,5 @@
 import db from "../db/knex"; // Assuming you have a Knex instance configured
-import { Product } from "../interfaces/product";
+import { Product, ProductStockLog } from "../interfaces/product";
 
 
 export class ProductRepository {
@@ -15,7 +15,7 @@ export class ProductRepository {
     }
 
     // Get a product by ID
-    static async getProductById(id: string): Promise<Product | null> {
+    static async getProductById(id: number): Promise<Product | null> {
         const result = await db.raw(`SELECT * FROM products WHERE id = ?`, [id]);
         return result.rows.length ? result.rows[0] : null;
     }
@@ -27,7 +27,7 @@ export class ProductRepository {
     }
 
     // Update a product
-    static async updateProduct(id: string, product: Partial<Product>): Promise<boolean> {
+    static async updateProduct(id: number, product: Partial<Product>): Promise<boolean> {
         const fields = Object.keys(product).map((key) => `${key} = ?`).join(', ');
         const values = Object.values(product);
         values.push(id); // Add the ID to the end
@@ -40,28 +40,69 @@ export class ProductRepository {
     }
 
     // Delete a product
-    static async deleteProduct(id: string): Promise<boolean> {
+    static async deleteProduct(id: number): Promise<boolean> {
         const result = await db.raw(`DELETE FROM products WHERE id = ? RETURNING id`, [id]);
         return result.rows.length > 0;
     }
 
     // Update product stock using delta
-    static async updateProductStockDelta(id: string, delta: number): Promise<Product | null> {
+    static async updateProductStockDelta(id: number, delta: number): Promise<Product | null> {
         try {
             let product = await this.getProductById(id)
             if (product !== null) {
                 const tempStock = (product?.stock || 0) + delta
+                if (tempStock < 0) {
+                    throw new Error("stock can't be negative")
+                }
+
                 product = {
                     ...product,
                     stock: tempStock
                 }
                 await this.updateProduct(id, product)
+                await this.createProductStockLog(Number(id), delta, tempStock)
                 return product
             }
         } catch(e) {
-            return null
+            throw(e)
         }
 
         return null
+    }
+
+    static async createProductStockLog(product_id: number, stock_delta: number, stock: number): Promise<ProductStockLog | null> {
+        let log: ProductStockLog = {
+            id: 0,
+            product_id,
+            stock_delta,
+            stock
+        }
+
+        try {
+            const result = await db.raw(`
+                INSERT INTO product_stock_logs (product_id, stock_delta, stock) 
+                VALUES (?, ?, ?) RETURNING id
+            `, [ log.product_id, log.stock_delta, log.stock ])
+            
+            log.id = result.rows[0].id
+
+        } catch(e) {
+            return null
+        }
+        return log
+    }
+
+    static async getProductStockLogs(product_id: number): Promise<ProductStockLog[]> {
+        try {
+            const res = await db.raw(`
+                SELECT id, product_id, stock_delta, stock, created_at, updated_at
+                FROM product_stock_logs
+                WHERE product_id = ?
+                ORDER BY created_at DESC
+            `, [product_id])
+            return res.rows
+        } catch(e) {
+            throw(e)
+        }
     }
 }
