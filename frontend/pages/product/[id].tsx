@@ -1,5 +1,6 @@
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Button } from "@/components/ui/button"
+import { ICart } from "@/models/cart"
 import { Product, RemoteGetProductDetail } from "@/models/product"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -32,6 +33,22 @@ export default function ProductDetail() {
             setIsFetching(false)
         }
     }, [])
+
+    const handleAddToCart = (product: Product, quantity: number) => {
+        const cart = localStorage.getItem('cartitems') || '[]'
+        let carItems: Array<ICart> = JSON.parse(cart)
+
+        const idx = carItems.findIndex((o) => o.id === product.id)
+        if (idx !== -1) {
+            carItems[idx].qty += qty
+        } else {
+            carItems.push({
+                ...product,
+                qty: quantity
+            })
+        }
+        localStorage.setItem("cartitems", JSON.stringify(carItems))
+    }
 
     useEffect(() => {
         if (router.isReady) {
@@ -73,7 +90,13 @@ export default function ProductDetail() {
                                 <Button variant={'ghost'} onClick={() => setQty(qty+1)}>+</Button>
                             </div>
                             <div className="flex-1">
-                                <Button disabled={product.stock === 0} className="w-full">Add To Cart</Button>                      
+                                <Button 
+                                    disabled={product.stock === 0} 
+                                    className="w-full"
+                                    onClick={() => handleAddToCart(product, qty)}
+                                >
+                                    Add To Cart
+                                </Button>                      
                             </div>
                         </div>
                     </div>
