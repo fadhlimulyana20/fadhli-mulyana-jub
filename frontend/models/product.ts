@@ -112,3 +112,14 @@ export async function RemoteGetProductStockLog(product_id: number) {
         throw (e)
     }
 }
+
+export async function RemoteGetProductCategories() {
+    try {
+        const res = await backendAPI.get<IResponse<Array<any>>>(BackendURL.products.categories)
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw (e)
+    }
+}

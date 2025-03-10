@@ -27,7 +27,7 @@ export class ProductRepository {
             limit = 10,
             search = "",
             category = ""
-        } : {
+        }: {
             page: number;
             limit: number;
             search?: string;
@@ -60,9 +60,36 @@ export class ProductRepository {
         return result.rows;
     }
 
-    static async getTotalProducts(): Promise<number> {
+    static async getTotalProducts(
+        {
+            page = 1,
+            limit = 10,
+            search = "",
+            category = ""
+        }: {
+            page: number;
+            limit: number;
+            search?: string;
+            category?: string;
+        }
+    ): Promise<number> {
         try {
-            const result = await db.raw(`SELECT COUNT(*) AS total FROM products`);
+            let query = `SELECT COUNT(*) AS total FROM products`;
+            const queryParams: any[] = [];
+
+            // Apply Search Filter (if provided)
+            if (search) {
+                query += ` WHERE lower(title) ILIKE ?`; // ILIKE for case-insensitive search (PostgreSQL)
+                queryParams.push(`%${search.toLowerCase()}%`);
+            }
+
+            // Apply Category Filter (if provided)
+            if (category) {
+                query += search ? ` AND category = ?` : ` WHERE category = ?`;
+                queryParams.push(category);
+            }
+
+            const result = await db.raw(query, queryParams);
             return Number(result.rows[0]?.total) || 0;
         } catch (error) {
             console.error("Error fetching total products:", error);
@@ -112,6 +139,16 @@ export class ProductRepository {
         }
 
         return null
+    }
+
+    static async getAllCategories(): Promise<string[]> {
+        try {
+            const result = await db.raw(`SELECT DISTINCT category FROM products ORDER BY category ASC`);
+            return result.rows.map((row: { category: string }) => row.category);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+            throw new Error("Failed to fetch categories");
+        }
     }
 
     static async createProductStockLog(product_id: number, stock_delta: number, stock: number): Promise<ProductStockLog | null> {

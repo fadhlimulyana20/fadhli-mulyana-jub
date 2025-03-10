@@ -27,17 +27,25 @@ export class ProductHandler {
       const page = parseInt(parsedQuery.page, 10);
       const limit = parseInt(parsedQuery.limit, 10);
 
+      const filterParam = {
+        search: decodeURIComponent(parsedQuery.search || ''),
+        category: decodeURIComponent(parsedQuery.category || ''),
+        limit,
+        page
+      }
+
       // Fetch filtered and paginated products
       const products = await ProductRepository.getAllProducts(
         {
-          search: parsedQuery.search,
-          category: parsedQuery.category,
-          limit,
-          page
+          ...filterParam
         }
       );
 
-      const total_product = await ProductRepository.getTotalProducts()
+      const total_product = await ProductRepository.getTotalProducts(
+        {
+          ...filterParam
+        }
+      )
 
       const response: IResponse<Array<Product>> = {
         message: 'success',
@@ -91,4 +99,20 @@ export class ProductHandler {
       throw (e)
     }
   }
+
+  static async getAllCategories(req: FastifyRequest, reply: FastifyReply) {
+    try {
+        const categories = await ProductRepository.getAllCategories();
+
+        const response: IResponse<Array<String>> = {
+          message: 'success',
+          status_code: 200,
+          data: categories,
+        }
+        return reply.send(response);
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        return reply.status(500).send({ error: "Internal Server Error" });
+    }
+}
 }

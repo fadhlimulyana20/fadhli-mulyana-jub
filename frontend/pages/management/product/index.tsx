@@ -1,7 +1,7 @@
 import TableKey from "@/components/molecules/table"
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Button } from "@/components/ui/button"
-import { IProductFilter, Product, RemoteAdjustProductStock, RemoteDeleteProduct, RemoteGetProductList } from "@/models/product"
+import { IProductFilter, Product, RemoteAdjustProductStock, RemoteDeleteProduct, RemoteGetProductCategories, RemoteGetProductList } from "@/models/product"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { EventHandler, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react"
@@ -14,6 +14,7 @@ import Header from "@/components/atoms/head"
 import { PaginationPure } from "@/components/molecules/pagination"
 import { IMeta } from "@/models/responseHttp"
 import { Search } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ProductManagementIndexPage() {
     const router = useRouter()
@@ -28,6 +29,7 @@ export default function ProductManagementIndexPage() {
         limit: 10,
         page: 1
     })
+    const [categories, setCategories] = useState<Array<string>>([])
 
     const tableOptions = [
         {
@@ -139,20 +141,36 @@ export default function ProductManagementIndexPage() {
         }
     }, [])
 
+    const fetchCategories = useCallback(async () => {
+        try {
+            const res = await RemoteGetProductCategories()
+            console.log(res?.data)
+            if (typeof res?.data !== "undefined") {
+                setCategories([...res.data])
+            }
+        } catch (e: any) {
+            console.log(e)
+        }
+    }, [])
+
     const handleChangePage = (page: number) => {
         router.push({ query: { ...router.query, page: page } }, undefined, { shallow: true })
     }
 
-    const handleSubmitSearch = (e:  SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
+    const handleSubmitSearch = (e: SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
         e.preventDefault()
         router.push({ query: { ...router.query, search: encodeURIComponent(searchRef.current?.value || '') } }, undefined, { shallow: true })
+    }
+
+    const handleCategorySelect = (value: string) => {
+        router.push({ query: { ...router.query, category: encodeURIComponent(value) } }, undefined, { shallow: true })
     }
 
     useEffect(() => {
         if (router.isReady) {
             const param: IProductFilter = {}
 
-            const { page, search } = router.query
+            const { page, search, category } = router.query
 
             if (typeof page !== "undefined") {
                 param.page = Number(page)
@@ -166,10 +184,24 @@ export default function ProductManagementIndexPage() {
                 param.search = undefined
             }
 
+            if (typeof category !== "undefined") {
+                if (String(category) === "all") {
+                    param.category = undefined
+                } else {
+                    param.category = String(category)
+                }
+            } else {
+                param.category = undefined
+            }
+
 
             fetchProduct(param)
         }
     }, [router])
+
+    useEffect(() => {
+        fetchCategories()
+    }, [])
 
     return (
         <>
@@ -230,13 +262,24 @@ export default function ProductManagementIndexPage() {
                             <Button type="submit"><Search /></Button>
                         </div>
                     </form>
+                    <Select onValueChange={(value) => handleCategorySelect(value)}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select Category" defaultValue={'Select Category'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            {categories.map((o, i) => (
+                                <SelectItem key={i} value={o}>{o}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="space-y-4">
-                    { isFetching ? (
+                    {isFetching ? (
                         <div className="space-y-2">
-                            { [...Array(10)].map((o) => (
+                            {[...Array(10)].map((o) => (
                                 <div key={o} className="animate-pulse bg-gray-200 dark:bg-gray-700 w-full h-10 rounded-lg" />
-                            )) }
+                            ))}
                         </div>
                     ) : (
                         <TableKey
@@ -244,7 +287,7 @@ export default function ProductManagementIndexPage() {
                             actions={tableActions}
                             options={tableOptions}
                         />
-                    ) }
+                    )}
                     <PaginationPure
                         pages={Math.ceil(meta.count / meta.limit)}
                         activePage={meta.page}
