@@ -51,6 +51,12 @@ export default function ProductManagementIndexPage() {
             }
         },
         {
+            name: 'View Stock Logs',
+            action: (id: any) => {
+                router.push(`/management/product/stock-logs/${id}`)
+            }
+        },
+        {
             name: 'Hapus',
             action: (id: any) => {
                 setProductIDSelected(Number(id))

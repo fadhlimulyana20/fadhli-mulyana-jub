@@ -44,6 +44,15 @@ export default function TableKey({
   const [idToDelete, setIdToDelete] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: "numeric",
+    minute: "numeric",
+    timeZone: "Asia/Jakarta",
+    timeZoneName: "short",
+  };
 
   return (
     <>
@@ -70,7 +79,7 @@ export default function TableKey({
                     if (o.type && o.type === 'date') {
                       return (
                         <td key={oidx} className="px-6 py-4">
-                          Silver
+                          { new Intl.DateTimeFormat("id-ID", dateOptions).format(new Date(eval(`d.${o.accessor}`))) }
                         </td>
                       )
                       // return (<Td key={oidx}><Moment format="DD-MM-YYYY, HH:mm z" date={new Date(eval(`d.${o.accessor}`))} /></Td>)
@@ -127,12 +136,12 @@ export default function TableKey({
                     <MenuItems
                       transition
                       anchor="bottom end"
-                      className="min-w-18 py-2 origin-top-right rounded-xl border border-gray-800/30 bg-gray-500/30 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+                      className="min-w-18 py-2 origin-top-right rounded-xl border border-gray-800/80 bg-gray-500/80 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                     >
                       {actions.map((obj, idx) => (
                         <MenuItem key={idx}>
                           <button
-                            className="block data-[focus]:bg-green-500/50 rounded-md px-2 w-full cursor-pointer"
+                            className="block data-[focus]:bg-blue-500/50 rounded-md px-2 w-full cursor-pointer"
                             onClick={() => obj.action(d.id)}
                           >
                             {obj.name}

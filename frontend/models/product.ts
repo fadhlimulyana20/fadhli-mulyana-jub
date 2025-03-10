@@ -11,6 +11,15 @@ export interface Product {
     stock?: number;
 }
 
+export interface ProductStockLog {
+    id: number;
+    product_id: number;
+    stock_delta: number;
+    stock: number;
+    created_at?: string;
+    updated_at?: string;
+  }
+
 export async function RemoteGetProductList() {
     try {
         const res = await backendAPI.get<Array<Product>>(BackendURL.products.list)
@@ -75,6 +84,17 @@ export async function RemoteAdjustProductStock(product_id: number, stock_delta: 
         const res = await backendAPI.put<Product>(BackendURL.products.adjustStock.replace(/:id/g, String(product_id)), {
             delta: stock_delta
         })
+        if ([200, 201].includes(res.status)) {
+            return res.data
+        }
+    } catch (e: any) {
+        throw(e)
+    }
+}
+
+export async function RemoteGetProductStockLog(product_id: number) {
+    try {
+        const res = await backendAPI.get<Array<ProductStockLog>>(BackendURL.products.getStockLog.replace(/:id/g, String(product_id)))
         if ([200, 201].includes(res.status)) {
             return res.data
         }
