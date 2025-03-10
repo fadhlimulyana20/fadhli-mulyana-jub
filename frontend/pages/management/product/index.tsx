@@ -1,23 +1,33 @@
 import TableKey from "@/components/molecules/table"
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Button } from "@/components/ui/button"
-import { Product, RemoteAdjustProductStock, RemoteDeleteProduct, RemoteGetProductList } from "@/models/product"
+import { IProductFilter, Product, RemoteAdjustProductStock, RemoteDeleteProduct, RemoteGetProductList } from "@/models/product"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { EventHandler, SyntheticEvent, useCallback, useEffect, useRef, useState } from "react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import Header from "@/components/atoms/head"
+import { PaginationPure } from "@/components/molecules/pagination"
+import { IMeta } from "@/models/responseHttp"
+import { Search } from "lucide-react"
 
 export default function ProductManagementIndexPage() {
     const router = useRouter()
     const [products, setProducts] = useState<Array<Product>>([])
     const [productIDSelected, setProductIDSelected] = useState(0)
     const [productIDAdjustStock, setProductIDAdjustStock] = useState(0)
+    const [isFetching, setIsFetching] = useState(false)
     const stockDeltaRef = useRef<HTMLInputElement>(null)
+    const searchRef = useRef<HTMLInputElement>(null)
+    const [meta, setMeta] = useState<IMeta>({
+        count: 0,
+        limit: 10,
+        page: 1
+    })
 
     const tableOptions = [
         {
@@ -112,20 +122,54 @@ export default function ProductManagementIndexPage() {
         }
     }
 
-    const fetchProduct = useCallback(async () => {
+    const fetchProduct = useCallback(async (param: IProductFilter) => {
+        setIsFetching(true)
         try {
-            const res = await RemoteGetProductList()
+            const res = await RemoteGetProductList(param)
             if (typeof res !== "undefined") {
-                setProducts(res)
+                setProducts(res.data || [])
+                if (typeof res.meta !== "undefined") {
+                    setMeta(res.meta)
+                }
             }
         } catch (e: any) {
             console.log(e)
+        } finally {
+            setIsFetching(false)
         }
     }, [])
 
+    const handleChangePage = (page: number) => {
+        router.push({ query: { ...router.query, page: page } }, undefined, { shallow: true })
+    }
+
+    const handleSubmitSearch = (e:  SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
+        e.preventDefault()
+        router.push({ query: { ...router.query, search: encodeURIComponent(searchRef.current?.value || '') } }, undefined, { shallow: true })
+    }
+
     useEffect(() => {
-        fetchProduct()
-    }, [])
+        if (router.isReady) {
+            const param: IProductFilter = {}
+
+            const { page, search } = router.query
+
+            if (typeof page !== "undefined") {
+                param.page = Number(page)
+            } else {
+                param.page = 1
+            }
+
+            if (typeof search !== "undefined") {
+                param.search = String(search)
+            } else {
+                param.search = undefined
+            }
+
+
+            fetchProduct(param)
+        }
+    }, [router])
 
     return (
         <>
@@ -178,14 +222,38 @@ export default function ProductManagementIndexPage() {
             </Dialog>
 
             <div className="container xl:max-w-screen-xl lg:maw-sccreen-lg lg:px-8 px-4 mx-auto py-10">
-                <div className="mb-4">
+                <div className="mb-4 flex gap-4 items-center">
                     <Button onClick={() => router.push('/management/product/create')}>Create</Button>
+                    <form onSubmit={handleSubmitSearch}>
+                        <div className="flex gap-1">
+                            <Input ref={searchRef} placeholder="Search Product" />
+                            <Button type="submit"><Search /></Button>
+                        </div>
+                    </form>
                 </div>
-                <TableKey
-                    data={products}
-                    actions={tableActions}
-                    options={tableOptions}
-                />
+                <div className="space-y-4">
+                    { isFetching ? (
+                        <div className="space-y-2">
+                            { [...Array(10)].map((o) => (
+                                <div key={o} className="animate-pulse bg-gray-200 dark:bg-gray-700 w-full h-10 rounded-lg" />
+                            )) }
+                        </div>
+                    ) : (
+                        <TableKey
+                            data={products}
+                            actions={tableActions}
+                            options={tableOptions}
+                        />
+                    ) }
+                    <PaginationPure
+                        pages={Math.ceil(meta.count / meta.limit)}
+                        activePage={meta.page}
+                        onChangePage={(arg: number) => {
+                            handleChangePage(arg)
+                        }}
+                        key={meta.page}
+                    />
+                </div>
             </div>
         </>
     )

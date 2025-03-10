@@ -1,5 +1,7 @@
 import { BackendURL } from "@/constant/urls";
 import { backendAPI } from "@/utils/axios/axios";
+import { IResponse } from "./responseHttp";
+import { buildQuery } from "@/utils/query";
 
 export interface Product {
     id?: string; // UUID or auto-increment
@@ -18,16 +20,24 @@ export interface ProductStockLog {
     stock: number;
     created_at?: string;
     updated_at?: string;
-  }
+}
 
-export async function RemoteGetProductList() {
+export interface IProductFilter {
+    search?: string;
+    category?: string;
+    limit?: number;
+    page?: number;
+}
+
+export async function RemoteGetProductList(param: IProductFilter) {
+    let query = buildQuery(param)
     try {
-        const res = await backendAPI.get<Array<Product>>(BackendURL.products.list)
+        const res = await backendAPI.get<IResponse<Array<Product>>>(BackendURL.products.list + `?${query}`)
         if ([200, 201].includes(res.status)) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
 
@@ -38,10 +48,10 @@ export async function RemoteGetProductDetail(id: string) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
-  
+
 export async function RemoteUpdateProduct(param: Product) {
     try {
         const res = await backendAPI.put<Product>(BackendURL.products.detail.replace(/:id/g, String(param.id)), {
@@ -51,10 +61,10 @@ export async function RemoteUpdateProduct(param: Product) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
-  
+
 export async function RemoteCreateProduct(param: Product) {
     try {
         const res = await backendAPI.post<Product>(BackendURL.products.list, {
@@ -64,10 +74,10 @@ export async function RemoteCreateProduct(param: Product) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
-  
+
 export async function RemoteDeleteProduct(id: number) {
     try {
         const res = await backendAPI.delete<any>(BackendURL.products.detail.replace(/:id/g, String(id)))
@@ -75,7 +85,7 @@ export async function RemoteDeleteProduct(id: number) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
 
@@ -88,7 +98,7 @@ export async function RemoteAdjustProductStock(product_id: number, stock_delta: 
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }
 
@@ -99,6 +109,6 @@ export async function RemoteGetProductStockLog(product_id: number) {
             return res.data
         }
     } catch (e: any) {
-        throw(e)
+        throw (e)
     }
 }

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import ProductCard from "@/components/molecules/card/productCard";
 import { useCallback, useEffect, useState } from "react";
-import { Product, RemoteGetProductList } from "@/models/product";
+import { IProductFilter, Product, RemoteGetProductList } from "@/models/product";
 import { MainNavbar } from "@/components/organisms/navbar/main";
 import Header from "@/components/atoms/head";
 
@@ -20,11 +20,11 @@ const geistMono = Geist_Mono({
 export default function Home() {
   const [products, setProducts] = useState<Array<Product>>([])
 
-  const fetchProduct = useCallback(async () => {
+  const fetchProduct = useCallback(async (param: IProductFilter) => {
     try {
-      const res = await RemoteGetProductList()
+      const res = await RemoteGetProductList(param)
       if (typeof res !== "undefined") {
-        setProducts(res)
+        setProducts(res.data || [])
       }
     } catch (e: any) {
       console.log(e)
@@ -32,7 +32,10 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    fetchProduct()
+    const param: IProductFilter = {
+
+    }
+    fetchProduct(param)
   }, [])
 
   return (

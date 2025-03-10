@@ -21,9 +21,53 @@ export class ProductRepository {
     }
 
     // Get all products
-    static async getAllProducts(): Promise<Product[]> {
-        const result = await db.raw(`SELECT * FROM products order by created_at ASC`);
+    static async getAllProducts(
+        {
+            page = 1,
+            limit = 10,
+            search = "",
+            category = ""
+        } : {
+            page: number;
+            limit: number;
+            search?: string;
+            category?: string;
+        }
+    ): Promise<Product[]> {
+        const offset = (page - 1) * limit; // Calculate offset for pagination
+
+        let query = `SELECT * FROM products`;
+        const queryParams: any[] = [];
+
+        // Apply Search Filter (if provided)
+        if (search) {
+            query += ` WHERE lower(title) ILIKE ?`; // ILIKE for case-insensitive search (PostgreSQL)
+            queryParams.push(`%${search.toLowerCase()}%`);
+        }
+
+        // Apply Category Filter (if provided)
+        if (category) {
+            query += search ? ` AND category = ?` : ` WHERE category = ?`;
+            queryParams.push(category);
+        }
+
+        // Apply Sorting, Limit, and Offset
+        query += ` ORDER BY created_at ASC LIMIT ? OFFSET ?`;
+        queryParams.push(limit, offset);
+
+        // Execute Raw SQL Query
+        const result = await db.raw(query, queryParams);
         return result.rows;
+    }
+
+    static async getTotalProducts(): Promise<number> {
+        try {
+            const result = await db.raw(`SELECT COUNT(*) AS total FROM products`);
+            return Number(result.rows[0]?.total) || 0;
+        } catch (error) {
+            console.error("Error fetching total products:", error);
+            throw new Error("Database error");
+        }
     }
 
     // Update a product
@@ -63,8 +107,8 @@ export class ProductRepository {
                 await this.createProductStockLog(Number(id), delta, tempStock)
                 return product
             }
-        } catch(e) {
-            throw(e)
+        } catch (e) {
+            throw (e)
         }
 
         return null
@@ -82,11 +126,11 @@ export class ProductRepository {
             const result = await db.raw(`
                 INSERT INTO product_stock_logs (product_id, stock_delta, stock) 
                 VALUES (?, ?, ?) RETURNING id
-            `, [ log.product_id, log.stock_delta, log.stock ])
-            
+            `, [log.product_id, log.stock_delta, log.stock])
+
             log.id = result.rows[0].id
 
-        } catch(e) {
+        } catch (e) {
             return null
         }
         return log
@@ -101,8 +145,8 @@ export class ProductRepository {
                 ORDER BY created_at DESC
             `, [product_id])
             return res.rows
-        } catch(e) {
-            throw(e)
+        } catch (e) {
+            throw (e)
         }
     }
 }
