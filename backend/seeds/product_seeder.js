@@ -50,6 +50,8 @@ async function bulkImport(db, products) {
       (p) => !existingIds.has(p.id) && !existingTitles.has(p.title)
     );
 
+    console.log(newProducts)
+
     if (newProducts.length === 0) return "No new products to import.";
 
     //Insert only new products
@@ -74,8 +76,6 @@ async function bulkImport(db, products) {
 
 
 exports.seed = async function (knex) {
-  // Deletes ALL existing entries
-  await knex('products').del()
   try {
     const products = await fetchProducts()
     await bulkImport(knex, products)

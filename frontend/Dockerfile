@@ -33,6 +33,7 @@ RUN apk add --no-cache --upgrade bash
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
+ENV NEXT_PUBLIC_BACKEND_URL=http://localhost:5500
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.

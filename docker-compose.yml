@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jubelio_hiring
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: fastify_backend
+    depends_on:
+      - postgres
+    env_file:
+      - ./backend/.env.dev
+    command: ["sh", "-c", "npm run migration:prod:latest && npm run seed:prod:run && node ./index.js"]
+    ports:
+      - "5500:5500"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: nextjs_frontend
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:5500
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

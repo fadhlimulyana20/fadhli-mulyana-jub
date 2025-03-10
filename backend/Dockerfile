@@ -16,7 +16,7 @@ FROM node:22-alpine AS runner
 WORKDIR /usr/app
 ARG APP_ENV
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist ./
 COPY package.json ./
 
 # Exposing server port
@@ -24,4 +24,4 @@ EXPOSE 5500
 
 USER node
 ENV NODE_ENV="production"
-CMD ["npm", "start"]
+CMD ["node", "./dist/index.js"]
