@@ -79,7 +79,7 @@ export default function ProductManagementIndexPage() {
     ]
 
     const handleDelete = async () => {
-        let productList = products.filter((o) => Number(o.id) !== Number(productIDSelected))
+        const productList = products.filter((o) => Number(o.id) !== Number(productIDSelected))
         setProducts(productList)
 
         try {
@@ -101,7 +101,7 @@ export default function ProductManagementIndexPage() {
 
         const delta = stockDeltaRef.current?.value
 
-        let tempProducts = [...products]
+        const tempProducts = [...products]
         if (typeof tempProducts[productIDX].stock !== "undefined") {
             tempProducts[productIDX].stock += Number(delta)
         }

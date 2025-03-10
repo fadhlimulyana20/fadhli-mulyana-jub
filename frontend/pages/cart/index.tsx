@@ -18,7 +18,7 @@ export default function CartIndexPage() {
     const handleChangeQuantity = (id: string, qty: number) => {
         const cartIdx = cart.findIndex((o) => Number(o.id) === Number(id))
         if (cartIdx !== -1) {
-            let cartTemp = [...cart]
+            const cartTemp = [...cart]
             if (cartTemp[cartIdx].qty + qty > 0) {
                 cartTemp[cartIdx].qty += qty
                 setCart(cartTemp)
@@ -28,7 +28,7 @@ export default function CartIndexPage() {
     }
 
     const handleDelete = (id: string) => {
-        let cartTemp = [...cart.filter((o) => Number(o.id) !== Number(id))]
+        const cartTemp = [...cart.filter((o) => Number(o.id) !== Number(id))]
         setCart(cartTemp)
         localStorage.setItem('cartitems', JSON.stringify(cartTemp))
     }

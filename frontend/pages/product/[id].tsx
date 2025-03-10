@@ -38,7 +38,7 @@ export default function ProductDetail() {
 
     const handleAddToCart = (product: Product, quantity: number) => {
         const cart = localStorage.getItem('cartitems') || '[]'
-        let carItems: Array<ICart> = JSON.parse(cart)
+        const carItems: Array<ICart> = JSON.parse(cart)
 
         const idx = carItems.findIndex((o) => o.id === product.id)
         if (idx !== -1) {

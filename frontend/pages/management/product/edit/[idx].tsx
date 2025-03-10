@@ -41,7 +41,7 @@ export default function ProductManagementEditPage() {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
-        let errTemp = []
+        const errTemp = []
         if (product.title === "") {
             errTemp.push("Product can't be null")
         }
