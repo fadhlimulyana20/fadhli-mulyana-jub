@@ -1,3 +1,4 @@
+import Header from "@/components/atoms/head"
 import TableKey from "@/components/molecules/table"
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Product, ProductStockLog, RemoteGetProductDetail, RemoteGetProductStockLog } from "@/models/product"
@@ -74,9 +75,13 @@ export default function ProductStockLogsPage() {
 
     return (
         <>
+            <Header
+                title="Product Logs"
+                description="Product Logs"
+            />
             <MainNavbar />
             <div className="container xl:max-w-screen-xl lg:maw-sccreen-lg lg:px-8 px-4 mx-auto py-10">
-                 <h2 className="text-2xl font-semibold mb-4">Stock Logs of {product.title}</h2>
+                <h2 className="text-2xl font-semibold mb-4">Stock Logs of {product.title}</h2>
                 <TableKey
                     data={logs}
                     options={tableOptions}

@@ -1,3 +1,4 @@
+import Header from "@/components/atoms/head"
 import { MainNavbar } from "@/components/organisms/navbar/main"
 import { Button } from "@/components/ui/button"
 import { ICart } from "@/models/cart"
@@ -5,6 +6,7 @@ import { Product, RemoteGetProductDetail } from "@/models/product"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export default function ProductDetail() {
     const router = useRouter()
@@ -48,6 +50,13 @@ export default function ProductDetail() {
             })
         }
         localStorage.setItem("cartitems", JSON.stringify(carItems))
+        toast("Success", {
+            description: "Product added to cart",
+            action: {
+                label: "View Cart",
+                onClick: () => router.push('/cart')
+            }
+        })
     }
 
     useEffect(() => {
@@ -59,6 +68,10 @@ export default function ProductDetail() {
 
     return (
         <>
+            <Header
+                title={ product.title }
+                description={ product.description || '' }
+            />
             <MainNavbar />
             <div className="container xl:max-w-screen-xl lg:maw-sccreen-lg lg:px-8 px-4 mx-auto py-10">
                 <div className="grid md:grid-cols-2 gap-10">
@@ -74,29 +87,29 @@ export default function ProductDetail() {
                     <div>
                         <div className="mb-4">
                             <div className="mb-2">
-                                <h2 className="text-2xl font-semibold">{ product.title }</h2>
+                                <h2 className="text-2xl font-semibold">{product.title}</h2>
                                 <p className="text-md text-gray-700">{product.category}</p>
                             </div>
-                            <p className="text-3xl">$ { product.price }</p>
+                            <p className="text-3xl">$ {product.price}</p>
                         </div>
-                        <p className="mb-4">{ product.description }</p>
+                        <p className="mb-4">{product.description}</p>
                         <div className="mb-4">
                             <p>Stock: {product.stock}</p>
                         </div>
                         <div className="flex gap-4">
                             <div className="flex border border-gray-300 size-fit rounded-lg">
-                                <Button variant={"ghost"} onClick={() => qty-1 > 0 && setQty(qty-1)}>-</Button>
+                                <Button variant={"ghost"} onClick={() => qty - 1 > 0 && setQty(qty - 1)}>-</Button>
                                 <div className="border-x border-gray-300 px-4 py-1">{qty}</div>
-                                <Button variant={'ghost'} onClick={() => setQty(qty+1)}>+</Button>
+                                <Button variant={'ghost'} onClick={() => setQty(qty + 1)}>+</Button>
                             </div>
                             <div className="flex-1">
-                                <Button 
-                                    disabled={product.stock === 0} 
+                                <Button
+                                    disabled={product.stock === 0}
                                     className="w-full"
                                     onClick={() => handleAddToCart(product, qty)}
                                 >
                                     Add To Cart
-                                </Button>                      
+                                </Button>
                             </div>
                         </div>
                     </div>

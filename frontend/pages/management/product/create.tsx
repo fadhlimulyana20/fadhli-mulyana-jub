@@ -1,3 +1,4 @@
+import Header from "@/components/atoms/head";
 import { MainNavbar } from "@/components/organisms/navbar/main";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,10 @@ export default function ProductManagementCreatePage() {
 
     return (
         <>
+            <Header
+                title="Create Product"
+                description="Create Product"
+            />
             <MainNavbar />
             <div className="container xl:max-w-screen-xl lg:maw-sccreen-lg lg:px-8 px-4 mx-auto py-5">
                 <h2 className="font-semibold text-2xl mb-5">Create Product</h2>

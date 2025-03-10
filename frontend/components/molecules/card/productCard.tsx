@@ -29,7 +29,7 @@ export default function ProductCard(
     }
 ) {
   return (
-    <Card className="md:max-w-[300px] w-full group relative space-y-2 overflow-hidden">
+    <Card className="md:max-w-[300px] w-full group relative space-y-2 overflow-hidden py-5 hover:bg-gray-100 dark:hover:bg-gray-800">
       <figure className="">
         <Button
           variant="ghost"
@@ -59,11 +59,6 @@ export default function ProductCard(
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-0 border-t">
-        <Button variant="default" className="w-full">
-          <PlusIcon className="size-4 me-1" /> Add to Card
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

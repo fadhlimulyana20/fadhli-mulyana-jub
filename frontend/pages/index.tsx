@@ -4,6 +4,7 @@ import ProductCard from "@/components/molecules/card/productCard";
 import { useCallback, useEffect, useState } from "react";
 import { Product, RemoteGetProductList } from "@/models/product";
 import { MainNavbar } from "@/components/organisms/navbar/main";
+import Header from "@/components/atoms/head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,10 @@ export default function Home() {
 
   return (
     <>
+      <Header 
+        title="Store"
+        description="Store"
+      />
       <MainNavbar />
       <div className="container px-8 max-w-screen-xl mx-auto py-10">
         <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-x-6 gap-y-8">

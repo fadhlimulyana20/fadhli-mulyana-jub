@@ -1,3 +1,4 @@
+import Header from "@/components/atoms/head";
 import { MainNavbar } from "@/components/organisms/navbar/main";
 import { Button } from "@/components/ui/button";
 import { ICart } from "@/models/cart";
@@ -39,11 +40,15 @@ export default function CartIndexPage() {
 
     return (
         <>
+            <Header
+                title="Cart"
+                description="Cart"
+              />
             <MainNavbar />
             <div className="container xl:max-w-screen-xl lg:maw-sccreen-lg lg:px-8 px-4 mx-auto py-10">
                 <h2 className="text-2xl font-semibold mb-4">Shopping Cart</h2>
                 <div className="grid md:grid-cols-6 gap-5">
-                    <div className="md:col-span-4">
+                    <div className="md:col-span-4 space-y-5">
 
                         {cart.map((o, i) => (
                             <div
@@ -53,7 +58,7 @@ export default function CartIndexPage() {
                                 <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                                     <div className="flex gap-4">
                                         <a href="#" className="shrink-0 md:order-1">
-                                            <Image height={200} width={200} className="md:h-32 md:w-32 h-48 w-48" src={o.image || ''} alt={o.title} />
+                                            <Image height={200} width={200} className="md:h-32 md:w-32 h-48 w-48 object-contain" src={o.image || ''} alt={o.title} />
                                         </a>
                                         <a href="#" className="text-xl font-medium text-gray-900 dark:text-gray-100 hover:underline md:hidden inline">{o.title}</a>
                                     </div>

@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import Header from "@/components/atoms/head"
 
 export default function ProductManagementIndexPage() {
     const router = useRouter()
@@ -97,14 +98,14 @@ export default function ProductManagementIndexPage() {
 
         try {
             const res = await RemoteAdjustProductStock(productIDAdjustStock, Number(delta))
-        } catch(e: any) {
+        } catch (e: any) {
             toast("Error", {
                 description: e.message
             })
             if (typeof tempProducts[productIDX].stock !== "undefined") {
                 tempProducts[productIDX].stock -= Number(delta)
             }
-    
+
             setProducts(tempProducts)
         } finally {
             setProductIDAdjustStock(0)
@@ -128,6 +129,11 @@ export default function ProductManagementIndexPage() {
 
     return (
         <>
+            <Header
+                title="Product List"
+                description="Product List"
+            />
+
             <MainNavbar />
 
             <AlertDialog open={productIDSelected !== 0}>
