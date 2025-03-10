@@ -50,22 +50,24 @@ async function bulkImport(db, products) {
       (p) => !existingIds.has(p.id) && !existingTitles.has(p.title)
     );
 
-    console.log(newProducts)
-
     if (newProducts.length === 0) return "No new products to import.";
 
     //Insert only new products
     const values = newProducts
       .map(
         (p) =>
-          `('${cleanString(p.title)}', ${p.price}, '${cleanString(p.description)}', '${cleanString(p.category)}', '${p.image}', ${p.stock ?? 0})`
+          `('${p.id}', '${cleanString(p.title)}', ${p.price}, '${cleanString(p.description)}', '${cleanString(p.category)}', '${p.image}', ${p.stock ?? 0})`
       )
       .join(",");
 
 
     await db.raw(
-      `INSERT INTO products (title, price, description, category, image, stock) VALUES ${values}`
+      `INSERT INTO products (id, title, price, description, category, image, stock) VALUES ${values}`
     );
+
+    await db.raw(
+      `SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE((SELECT MAX(id) FROM products), 1), true)`
+    )
 
     return `${newProducts.length} products imported successfully.`;
   } catch (error) {

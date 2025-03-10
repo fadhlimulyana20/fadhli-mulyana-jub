@@ -25,6 +25,7 @@ services:
     command: ["sh", "-c", "npm run migration:prod:latest && npm run seed:prod:run && node ./index.js"]
     ports:
       - "5500:5500"
+    restart: on-failure
 
   frontend:
     build:
@@ -36,6 +37,7 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    restart: on-failure
 
 volumes:
   pgdata:
