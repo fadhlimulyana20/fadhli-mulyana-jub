@@ -8,7 +8,6 @@ import dotenv from 'dotenv'
 import cors from '@fastify/cors'
 
 dotenv.config();
-console.log(process.env.DB_HOST);
 
 const fastify = Fastify({
   logger: true
@@ -27,7 +26,7 @@ fastify.get('/', function (request, reply) {
 fastify.register(productRoutes)
 
 // Run the server!
-fastify.listen({ port: 5500 }, function (err, address) {
+fastify.listen({ port: 5500, host: '0.0.0.0' }, function (err, address) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
